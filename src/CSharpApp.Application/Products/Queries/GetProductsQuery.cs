@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CSharpApp.Application.Products.Queries;
 
-public record GetProductsQuery(int? Limit = null) : IRequest<IReadOnlyCollection<Product>>;
+public record GetProductsQuery() : IRequest<IReadOnlyCollection<Product>>;
 
 public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, IReadOnlyCollection<Product>>
 {
@@ -20,14 +20,9 @@ public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, IReadOn
 
     public async Task<IReadOnlyCollection<Product>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling GetProductsQuery with Limit: {Limit}", request.Limit);
+        _logger.LogInformation("Handling GetProductsQuery");
 
         var products = await _productsService.GetProducts();
-
-        if (request.Limit.HasValue)
-        {
-            return products.Take(request.Limit.Value).ToList().AsReadOnly();
-        }
 
         return products;
     }

@@ -1,8 +1,7 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using CSharpApp.Api;
-using CSharpApp.Application.Products.Queries;
-using MediatR;
+using CSharpApp.Api.Endpoints;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -37,21 +36,7 @@ var app = builder.Build();
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
 
-versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts", async (IMediator mediator) =>
-    {
-        var products = await mediator.Send(new GetProductsQuery());
-        return products;
-    })
-    .WithName("GetProductsV1")
-    .HasApiVersion(1.0);
-
-versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts", async (IMediator mediator) =>
-    {
-        var products = await mediator.Send(new GetProductsQuery(3));
-        return products;
-    })
-    .WithName("GetProductsV2")
-    .HasApiVersion(2.0);
+versionedEndpointRouteBuilder.MapProductEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
