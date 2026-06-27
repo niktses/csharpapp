@@ -1,0 +1,14 @@
+**/.git
+**/.github
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/out
+**/appsettings.Development.json
+**/*.user
+**/*.suo
+**/*.userosscache
+**/*.sln.docstates
+Dockerfile
+.dockerignore
