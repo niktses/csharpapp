@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Docker Compose (No Debug)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "docker compose up --build",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Docker: Debug (.NET Core)",
+      "type": "docker-coreclr",
+      "request": "launch",
+      "preLaunchTask": "docker-run",
+      "dockerRun": {},
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/CSharpApp.Api/CSharpApp.Api.csproj"
+      }
+    }
+  ]
+}
