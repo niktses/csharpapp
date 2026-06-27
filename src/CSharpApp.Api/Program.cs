@@ -1,3 +1,9 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using CSharpApp.Api;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
@@ -9,7 +15,20 @@ builder.Services.AddOpenApi();
 builder.Services.AddDefaultConfiguration();
 builder.Services.AddHttpConfiguration();
 builder.Services.AddProblemDetails();
-builder.Services.AddApiVersioning();
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+})
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -17,6 +36,17 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName.ToUpperInvariant());
+        }
+    });
 }
 
 //app.UseHttpsRedirection();
@@ -28,7 +58,15 @@ versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts", as
         var products = await productsService.GetProducts();
         return products;
     })
-    .WithName("GetProducts")
+    .WithName("GetProductsV1")
     .HasApiVersion(1.0);
+
+versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts", async (IProductsService productsService) =>
+    {
+        var products = await productsService.GetProducts();
+        return products.Take(3).ToList();
+    })
+    .WithName("GetProductsV2")
+    .HasApiVersion(2.0);
 
 app.Run();
