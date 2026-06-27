@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace CSharpApp.Application.Products;
 
 public class ProductsService : IProductsService
@@ -23,5 +25,27 @@ public class ProductsService : IProductsService
         var res = JsonSerializer.Deserialize<List<Product>>(content);
         
         return res!.AsReadOnly();
+    }
+
+    public async Task<Product?> GetProductById(int id)
+    {
+        var response = await _httpClient.GetAsync($"{_restApiSettings.Products}/{id}");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<Product>(content);
+    }
+
+    public async Task<Product?> CreateProduct(CreateProductDto createProductDto)
+    {
+        var json = JsonSerializer.Serialize(createProductDto);
+        using var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync(_restApiSettings.Products, content);
+        response.EnsureSuccessStatusCode();
+        var responseContent = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<Product>(responseContent);
     }
 }
