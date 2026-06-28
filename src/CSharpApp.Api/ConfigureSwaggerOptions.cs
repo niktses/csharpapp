@@ -25,5 +25,12 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 Description = "A C# API demonstrating Clean Architecture with API Versioning and Swagger."
             });
         }
+
+        options.SwaggerDoc("internal", new OpenApiInfo
+        {
+            Title = "CSharpApp Internal Diagnostics API",
+            Version = "v1",
+            Description = "Internal diagnostics and metrics endpoints."
+        });
     }
 }

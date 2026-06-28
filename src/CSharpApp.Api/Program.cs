@@ -2,6 +2,8 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using CSharpApp.Api;
 using CSharpApp.Api.Endpoints;
+using CSharpApp.Api.Middleware;
+using CSharpApp.Api.Services;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -16,6 +18,7 @@ builder.Logging.ClearProviders().AddSerilog(logger);
 builder.Services.AddOpenApi();
 builder.Services.AddDefaultConfiguration();
 builder.Services.AddHttpConfiguration();
+builder.Services.AddSingleton<IRequestMetricsService, RequestMetricsService>();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddApiVersioning(options =>
@@ -35,11 +38,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseRouting();
+app.UseMiddleware<RequestPerformanceMiddleware>();
 app.UseExceptionHandler();
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
 
 versionedEndpointRouteBuilder.MapProductEndpoints();
+
+app.MapDiagnosticsEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -50,6 +57,7 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1");
         options.SwaggerEndpoint("/swagger/v2/swagger.json", "V2");
+        options.SwaggerEndpoint("/swagger/internal/swagger.json", "Internal");
     });
 }
 
