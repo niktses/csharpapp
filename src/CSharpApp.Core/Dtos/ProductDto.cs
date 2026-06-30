@@ -9,7 +9,7 @@ public sealed class Product
     public string? Title { get; set; }
 
     [JsonPropertyName("price")]
-    public int? Price { get; set; }
+    public decimal? Price { get; set; }
 
     [JsonPropertyName("description")]
     public string? Description { get; set; }

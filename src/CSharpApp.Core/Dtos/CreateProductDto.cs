@@ -8,7 +8,7 @@ public sealed class CreateProductDto
     public string Title { get; set; } = null!;
 
     [JsonPropertyName("price")]
-    public int Price { get; set; }
+    public decimal Price { get; set; }
 
     [JsonPropertyName("description")]
     public string Description { get; set; } = null!;
