@@ -33,6 +33,19 @@ public static class HttpConfiguration
             )
         );
 
+        services.AddHttpClient<ICategoriesService, CategoriesService>(client =>
+        {
+            client.BaseAddress = new Uri(restApiSettings.BaseUrl!);
+        })
+        .AddHttpMessageHandler<JwtAuthDelegatingHandler>()
+        .SetHandlerLifetime(TimeSpan.FromMinutes(httpClientSettings.LifeTime))
+        .AddTransientHttpErrorPolicy(policy =>
+            policy.WaitAndRetryAsync(
+                httpClientSettings.RetryCount,
+                retryAttempt => TimeSpan.FromMilliseconds(httpClientSettings.SleepDuration * Math.Pow(2, retryAttempt - 1))
+            )
+        );
+
         return services;
     }
 }

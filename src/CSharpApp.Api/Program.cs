@@ -45,6 +45,7 @@ app.UseExceptionHandler();
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
 
 versionedEndpointRouteBuilder.MapProductEndpoints();
+versionedEndpointRouteBuilder.MapCategoryEndpoints();
 
 app.MapDiagnosticsEndpoints();
 
@@ -57,6 +58,7 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1");
         options.SwaggerEndpoint("/swagger/v2/swagger.json", "V2");
+        options.SwaggerEndpoint("/swagger/v3/swagger.json", "V3");
         options.SwaggerEndpoint("/swagger/internal/swagger.json", "Internal");
     });
 }
