@@ -1,3 +1,5 @@
+using MediatR;
+
 namespace CSharpApp.Infrastructure.Configuration;
 
 public static class DefaultConfiguration
@@ -10,7 +12,7 @@ public static class DefaultConfiguration
         services.Configure<RestApiSettings>(configuration!.GetSection(nameof(RestApiSettings)));
         services.Configure<HttpClientSettings>(configuration.GetSection(nameof(HttpClientSettings)));
 
-        services.AddSingleton<IProductsService, ProductsService>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ProductsService).Assembly));
         
         return services;
     }

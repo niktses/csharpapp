@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "docker-build",
+      "type": "docker-build",
+      "dockerBuild": {
+        "tag": "csharpapp-api:latest",
+        "dockerfile": "${workspaceFolder}/Dockerfile",
+        "context": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "docker-run",
+      "type": "docker-run",
+      "dependsOn": [
+        "docker-build"
+      ],
+      "dockerRun": {
+        "ports": [
+          {
+            "hostPort": 8080,
+            "containerPort": 8080
+          }
+        ],
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "ASPNETCORE_HTTP_PORTS": "8080"
+        }
+      }
+    },
+    {
+      "label": "docker-compose-up",
+      "type": "shell",
+      "command": "docker compose up --build -d",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-compose-down",
+      "type": "shell",
+      "command": "docker compose down",
+      "problemMatcher": []
+    }
+  ]
+}

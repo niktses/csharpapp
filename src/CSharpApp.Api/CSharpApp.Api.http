@@ -5,3 +5,8 @@ GET {{HostAddress}}/api/{{Version}}/getproducts
 Accept: application/json
 
 ###
+
+GET {{HostAddress}}/internal/statistics
+Accept: application/json
+
+###
